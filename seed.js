@@ -8,7 +8,7 @@ const { data: listings } = require("./init/data.js");
 ;(async function seed() {
   // 1) Connect
   await mongoose.connect(
-    process.env.MONGO_URL || "mongodb://localhost:27017/mydatabase"
+    process.env.MONGO_URL || "mongodb://mongo:ngZXGCqKjSDlpunKMcYAjXTIpenChfpd@mongodb.railway.internal:27017"
   );
   console.log("✅ Connected to Mongo");
 
