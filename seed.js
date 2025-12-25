@@ -1,30 +1,45 @@
-// // seed.js
-// require("dotenv").config();
-// const mongoose  = require("mongoose");
-// // ← this is your Mongoose model, not the Joi schema:
-// const Listing   = require("./models/listing.js");
-// const { data: listings } = require("./init/data.js");
+require("dotenv").config();
+const mongoose = require("mongoose");
+const Listing = require("./models/listing");
+const User = require("./models/user");
+const { data: listings } = require("./init/data");
 
-// ;(async function seed() {
-//   // 1) Connect
-//   await mongoose.connect(
-//     process.env.MONGO_URL || "mongodb://mongo:ngZXGCqKjSDlpunKMcYAjXTIpenChfpd@mongodb.railway.internal:27017"
-//   );
-//   console.log("✅ Connected to Mongo");
+const MONGO_URL =
+  process.env.MONGO_URL ||
+  "mongodb://mongo:ngZXGCqKjSDlpunKMcYAjXTIpenChfpd@trolley.proxy.rlwy.net:58470";
 
-//   // 2) Wipe out old docs
-//   await Listing.deleteMany({});
-//   console.log("🗑️  Cleared old listings");
+async function seed() {
+  try {
+    console.log("🔗 Connecting to MongoDB...");
+    await mongoose.connect(MONGO_URL);
 
-//   // 3) Insert fresh ones from init/data.js
-//   await Listing.insertMany(listings);
-//   console.log(`🌱 Seeded ${listings.length} listings`);
+    console.log("🧹 Clearing old data...");
+    await Listing.deleteMany({});
+    await User.deleteMany({});
 
-//   // 4) Disconnect
-//   await mongoose.disconnect();
-//   console.log("👋 Disconnected, seed complete");
-//   process.exit(0);
-// })().catch(err => {
-//   console.error(err);
-//   process.exit(1);
-// });
+    console.log("👤 Creating default user...");
+    const user = new User({
+      username: "admin",
+      email: "admin@campuspulse.com",
+    });
+    await User.register(user, "admin123");
+
+    console.log("🌱 Seeding listings...");
+    const seededListings = listings.map(l => ({
+      ...l,
+      owner: user._id,
+    }));
+
+    await Listing.insertMany(seededListings);
+
+    console.log(`✅ Seeded ${seededListings.length} listings`);
+    console.log("🎉 SEED COMPLETE");
+
+    process.exit(0);
+  } catch (err) {
+    console.error("❌ Seed failed:", err);
+    process.exit(1);
+  }
+}
+
+seed();
