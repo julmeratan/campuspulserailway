@@ -37,12 +37,11 @@
          app.use(express.static(path.join(__dirname, "/public")))
          app.use(express.static(path.join(__dirname, '/images')));
      
-const mongourl = process.env.MONGO_URL;
+const mongourl =
+  "mongodb://mongo:ngZXGCqKjSDlpunKMcYAjXTIpenChfpd@mongodb.railway.internal:27017";
 
-if (!mongourl) {
-  console.error("❌ MONGO_URL not found in environment variables");
-  process.exit(1);
-}
+console.log("🔥 USING HARDCODED MONGO URL");
+
 
 console.log("MONGO_URL is:", mongourl);
 
