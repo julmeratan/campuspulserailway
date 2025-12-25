@@ -4,7 +4,7 @@
      const express = require("express");
      const mongoose = require("mongoose");
      const app = express();
-     const MONGO_URL = "mongodb://mongo:ngZXGCqKjSDlpunKMcYAjXTIpenChfpd@mongodb.railway.internal:27017";
+
      const CLOUDINARY_CLOUD_NAME = "dmcdfoduy";
      const CLOUDINARY_API_KEY = "956434331232872";
      const CLOUDINARY_API_SECRET = "2n_b4GmDIoJvzJL0jMKycW9ikUQ";
@@ -37,10 +37,17 @@
          app.use(express.static(path.join(__dirname, "/public")))
          app.use(express.static(path.join(__dirname, '/images')));
      
-let mongourl = process.env.MONGO_URL || "mongodb://mongo:ngZXGCqKjSDlpunKMcYAjXTIpenChfpd@mongodb.railway.internal:27017";
+const mongourl = process.env.MONGO_URL;
+
+if (!mongourl) {
+  console.error("❌ MONGO_URL not found in environment variables");
+  process.exit(1);
+}
+
 console.log("MONGO_URL is:", mongourl);
 
-console.log("MONGO_URL is:", process.env.MONGO_URL);
+
+
 
      
      // app.get("/", (req, res) => {
@@ -86,6 +93,7 @@ async function main(){
     try {
         await mongoose.connect(mongourl);
         console.log("MongoDB connected successfully");
+        await seedIfEmpty();
     } catch (err) {
         console.error("MongoDB connection error:", err);
     }
@@ -125,4 +133,4 @@ async function seedIfEmpty() {
   }
 }
 
-seedIfEmpty();
+
